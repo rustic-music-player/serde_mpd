@@ -7,9 +7,12 @@ pub struct Serializer {
 }
 
 pub fn to_string<T>(value: &T) -> Result<String>
-    where T: Serialize
+where
+    T: Serialize,
 {
-    let mut serializer = Serializer { output: String::new() };
+    let mut serializer = Serializer {
+        output: String::new(),
+    };
     value.serialize(&mut serializer)?;
     Ok(serializer.output)
 }
@@ -105,7 +108,8 @@ impl<'a> ser::Serializer for &'a mut Serializer {
     }
 
     fn serialize_some<T>(self, value: &T) -> Result<()>
-        where T: ?Sized + Serialize
+    where
+        T: ?Sized + Serialize,
     {
         value.serialize(self)
     }
@@ -129,7 +133,7 @@ impl<'a> ser::Serializer for &'a mut Serializer {
         self,
         _name: &'static str,
         _variant_index: u32,
-        variant: &'static str
+        variant: &'static str,
     ) -> Result<()> {
         self.serialize_str(variant)
     }
@@ -137,7 +141,8 @@ impl<'a> ser::Serializer for &'a mut Serializer {
     // As is done here, serializers are encouraged to treat newtype structs as
     // insignificant wrappers around the data they contain.
     fn serialize_newtype_struct<T>(self, _name: &'static str, value: &T) -> Result<()>
-        where T: ?Sized + Serialize
+    where
+        T: ?Sized + Serialize,
     {
         value.serialize(self)
     }
@@ -152,9 +157,10 @@ impl<'a> ser::Serializer for &'a mut Serializer {
         _name: &'static str,
         _variant_index: u32,
         variant: &'static str,
-        value: &T
+        value: &T,
     ) -> Result<()>
-        where T: ?Sized + Serialize
+    where
+        T: ?Sized + Serialize,
     {
         variant.serialize(&mut *self)?;
         self.output += ": ";
@@ -189,7 +195,7 @@ impl<'a> ser::Serializer for &'a mut Serializer {
     fn serialize_tuple_struct(
         self,
         _name: &'static str,
-        len: usize
+        len: usize,
     ) -> Result<Self::SerializeTupleStruct> {
         self.serialize_seq(Some(len))
     }
@@ -201,7 +207,7 @@ impl<'a> ser::Serializer for &'a mut Serializer {
         _name: &'static str,
         _variant_index: u32,
         variant: &'static str,
-        _len: usize
+        _len: usize,
     ) -> Result<Self::SerializeTupleVariant> {
         self.output += "{";
         variant.serialize(&mut *self)?;
@@ -219,11 +225,7 @@ impl<'a> ser::Serializer for &'a mut Serializer {
     // omit the field names when serializing structs because the corresponding
     // Deserialize implementation is required to know what the keys are without
     // looking at the serialized data.
-    fn serialize_struct(
-        self,
-        _name: &'static str,
-        len: usize
-    ) -> Result<Self::SerializeStruct> {
+    fn serialize_struct(self, _name: &'static str, len: usize) -> Result<Self::SerializeStruct> {
         self.serialize_map(Some(len))
     }
 
@@ -234,7 +236,7 @@ impl<'a> ser::Serializer for &'a mut Serializer {
         _name: &'static str,
         _variant_index: u32,
         variant: &'static str,
-        _len: usize
+        _len: usize,
     ) -> Result<Self::SerializeStructVariant> {
         variant.serialize(&mut *self)?;
         self.output += ":\n";
@@ -257,7 +259,8 @@ impl<'a> ser::SerializeSeq for &'a mut Serializer {
 
     // Serialize a single element of the sequence.
     fn serialize_element<T>(&mut self, value: &T) -> Result<()>
-        where T: ?Sized + Serialize
+    where
+        T: ?Sized + Serialize,
     {
         value.serialize(&mut **self)
     }
@@ -274,7 +277,8 @@ impl<'a> ser::SerializeTuple for &'a mut Serializer {
     type Error = Error;
 
     fn serialize_element<T>(&mut self, value: &T) -> Result<()>
-        where T: ?Sized + Serialize
+    where
+        T: ?Sized + Serialize,
     {
         value.serialize(&mut **self)
     }
@@ -290,7 +294,8 @@ impl<'a> ser::SerializeTupleStruct for &'a mut Serializer {
     type Error = Error;
 
     fn serialize_field<T>(&mut self, value: &T) -> Result<()>
-        where T: ?Sized + Serialize
+    where
+        T: ?Sized + Serialize,
     {
         self.output += "\n";
         value.serialize(&mut **self)
@@ -315,7 +320,8 @@ impl<'a> ser::SerializeTupleVariant for &'a mut Serializer {
     type Error = Error;
 
     fn serialize_field<T>(&mut self, value: &T) -> Result<()>
-        where T: ?Sized + Serialize
+    where
+        T: ?Sized + Serialize,
     {
         if !self.output.ends_with('[') {
             self.output += ",";
@@ -350,7 +356,8 @@ impl<'a> ser::SerializeMap for &'a mut Serializer {
     // (instead of `&mut **self`) and having that other serializer only
     // implement `serialize_str` and return an error on any other data type.
     fn serialize_key<T>(&mut self, key: &T) -> Result<()>
-        where T: ?Sized + Serialize
+    where
+        T: ?Sized + Serialize,
     {
         if !self.output.ends_with('{') {
             self.output += ",";
@@ -362,7 +369,8 @@ impl<'a> ser::SerializeMap for &'a mut Serializer {
     // `serialize_key` or at the beginning of `serialize_value`. In this case
     // the code is a bit simpler having it here.
     fn serialize_value<T>(&mut self, value: &T) -> Result<()>
-        where T: ?Sized + Serialize
+    where
+        T: ?Sized + Serialize,
     {
         self.output += ":";
         let ret = value.serialize(&mut **self);
@@ -382,7 +390,8 @@ impl<'a> ser::SerializeStruct for &'a mut Serializer {
     type Error = Error;
 
     fn serialize_field<T>(&mut self, key: &'static str, value: &T) -> Result<()>
-        where T: ?Sized + Serialize
+    where
+        T: ?Sized + Serialize,
     {
         key.serialize(&mut **self)?;
         self.output += ": ";
@@ -403,7 +412,8 @@ impl<'a> ser::SerializeStructVariant for &'a mut Serializer {
     type Error = Error;
 
     fn serialize_field<T>(&mut self, key: &'static str, value: &T) -> Result<()>
-        where T: ?Sized + Serialize
+    where
+        T: ?Sized + Serialize,
     {
         if !self.output.ends_with('{') {
             self.output += ",";
@@ -428,25 +438,25 @@ fn test_status() {
         #[serde(rename = "stop")]
         Stop,
         #[serde(rename = "play")]
-        Play
+        Play,
     }
 
     #[derive(Serialize)]
     struct Status {
         volume: i32,
-        state: State
+        state: State,
     }
 
     let u = Status {
         volume: 0,
-        state: State::Stop
+        state: State::Stop,
     };
     let expected = "volume: 0\nstate: stop\n";
     assert_eq!(to_string(&u).unwrap(), expected);
 
     let n = Status {
         volume: 100,
-        state: State::Play
+        state: State::Play,
     };
     let expected = "volume: 100\nstate: play\n";
     assert_eq!(to_string(&n).unwrap(), expected);
@@ -456,7 +466,7 @@ fn test_status() {
 fn test_seq() {
     #[derive(Serialize)]
     struct Test {
-        item: i32
+        item: i32,
     }
 
     let u = vec![Test { item: 0 }, Test { item: 5 }];
@@ -468,15 +478,15 @@ fn test_seq() {
 fn test_tuple() {
     #[derive(Serialize)]
     struct Test {
-        item: i32
+        item: i32,
     }
 
     #[derive(Serialize)]
     struct Foo {
-        bob: i32
+        bob: i32,
     }
 
-    let a = Test { item: 0};
+    let a = Test { item: 0 };
     let b = Foo { bob: 4 };
 
     let u = (a, b);

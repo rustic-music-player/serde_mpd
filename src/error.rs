@@ -1,7 +1,7 @@
 use std;
 use std::fmt::{self, Display};
 
-use serde::{ser, de};
+use serde::{de, ser};
 
 pub type Result<T> = std::result::Result<T, Error>;
 
@@ -38,7 +38,7 @@ pub enum Error {
     TrailingCharacters,
     UnsupportedType,
     ExpectedCommandSpace,
-    ExpectedCommandNewline
+    ExpectedCommandNewline,
 }
 
 impl ser::Error for Error {
@@ -64,8 +64,7 @@ impl std::error::Error for Error {
         match *self {
             Error::Message(ref msg) => msg,
             Error::Eof => "unexpected end of input",
-            _ => "\\_(.Y.)_/"
-            /* and so forth */
+            _ => "\\_(.Y.)_/", /* and so forth */
         }
     }
 }
