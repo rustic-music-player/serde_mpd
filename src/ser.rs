@@ -47,15 +47,15 @@ impl<'a> ser::Serializer for &'a mut Serializer {
     }
 
     fn serialize_i8(self, v: i8) -> Result<()> {
-        self.serialize_i64(v as i64)
+        self.serialize_i64(i64::from(v))
     }
 
     fn serialize_i16(self, v: i16) -> Result<()> {
-        self.serialize_i64(v as i64)
+        self.serialize_i64(i64::from(v))
     }
 
     fn serialize_i32(self, v: i32) -> Result<()> {
-        self.serialize_i64(v as i64)
+        self.serialize_i64(i64::from(v))
     }
 
     fn serialize_i64(self, v: i64) -> Result<()> {
@@ -64,15 +64,15 @@ impl<'a> ser::Serializer for &'a mut Serializer {
     }
 
     fn serialize_u8(self, v: u8) -> Result<()> {
-        self.serialize_u64(v as u64)
+        self.serialize_u64(u64::from(v))
     }
 
     fn serialize_u16(self, v: u16) -> Result<()> {
-        self.serialize_u64(v as u64)
+        self.serialize_u64(u64::from(v))
     }
 
     fn serialize_u32(self, v: u32) -> Result<()> {
-        self.serialize_u64(v as u64)
+        self.serialize_u64(u64::from(v))
     }
 
     fn serialize_u64(self, v: u64) -> Result<()> {
@@ -81,7 +81,7 @@ impl<'a> ser::Serializer for &'a mut Serializer {
     }
 
     fn serialize_f32(self, v: f32) -> Result<()> {
-        self.serialize_f64(v as f64)
+        self.serialize_f64(f64::from(v))
     }
 
     fn serialize_f64(self, v: f64) -> Result<()> {
@@ -98,7 +98,7 @@ impl<'a> ser::Serializer for &'a mut Serializer {
         Ok(())
     }
 
-    fn serialize_bytes(self, v: &[u8]) -> Result<()> {
+    fn serialize_bytes(self, _v: &[u8]) -> Result<()> {
         Err(Error::UnsupportedType)
     }
 
